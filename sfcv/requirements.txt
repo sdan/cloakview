@@ -1,0 +1,4 @@
+streamlit==0.57.1
+rq==1.1.0
+redis==3.2.1
+slackclient==2.5.0
