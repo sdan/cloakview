@@ -15,12 +15,12 @@ import tensorflow as tf
 logging.getLogger('tensorflow').disabled = True
 
 import numpy as np
-from fawkes.differentiator import FawkesMaskGeneration
-from fawkes.utils import load_extractor, init_gpu, select_target_label, dump_image, reverse_process_cloaked, \
+from differentiator import FawkesMaskGeneration
+from utils import load_extractor, init_gpu, select_target_label, dump_image, reverse_process_cloaked, \
     Faces, filter_image_paths
 
-from fawkes.align_face import aligner
-from fawkes.utils import get_file
+from align_face import aligner
+from utils import get_file
 
 
 def generate_cloak_images(protector, image_X, target_emb=None):

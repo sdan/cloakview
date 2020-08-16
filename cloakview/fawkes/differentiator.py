@@ -10,7 +10,7 @@ from decimal import Decimal
 
 import numpy as np
 import tensorflow as tf
-from fawkes.utils import preprocess, reverse_preprocess
+from utils import preprocess, reverse_preprocess
 from keras.utils import Progbar
 
 
