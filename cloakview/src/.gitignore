@@ -1,0 +1,20 @@
+*.DS_Store
+*.pyc
+*.swp
+dist/*
+build/*
+keras/datasets/data/*
+keras/datasets/temp/*
+tags
+fawkes.egg-info
+
+# test-related
+.coverage
+.cache
+.pytest_cache
+fawkes_dev/api_key.txt
+fawkes_dev/protect_personId.txt
+
+# developer environments
+.idea
+.vscode
