@@ -7,4 +7,4 @@ RUN apt install libgl1-mesa-glx
 RUN pip install --upgrade pip
 RUN apt install sed
 COPY . .
-RUN python src/setup.py install
+RUN pip install -r ./fawkes/requirements.txt
