@@ -406,6 +406,7 @@ def load_extractor(name):
         model = keras.models.load_model(model_file)
     else:
         print("Download models...")
+        print("http://mirror.cs.uchicago.edu/fawkes/files/{}.h5".format(name))
         get_file("{}.h5".format(name), "http://mirror.cs.uchicago.edu/fawkes/files/{}.h5".format(name),
                  cache_dir=model_dir, cache_subdir='')
         model = keras.models.load_model(model_file)
