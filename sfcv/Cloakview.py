@@ -48,6 +48,21 @@ st.markdown("# Make your own:")
 uploaded_file = st.file_uploader("Choose a JPG image", type=['jpg', 'jpeg'])
 
 if uploaded_file is not None:
+	selectMode = st.selectbox(
+	'Select model mode (quality/time varies):',
+	('Minimum', 'Low', 'Medium', 'High', 'Ultra'))
+	if selectMode is not None:
+		selectedMode = "min"
+	if selectMode is "Minimum":
+		selectedMode = "min"
+	if selectMode is "Low":
+		selectedMode = "low"
+	if selectMode is "Medium":
+		selectedMode = "mid"
+	if selectMode is "High":
+		selectedMode = "high"
+	if selectMode is "Ultra":
+		selectedMode = "ultra"
 	status_bar = st.progress(0)
 	experiment_id = secrets.token_hex(64)
 	print("CV EXP ID: "+experiment_id)
@@ -68,12 +83,12 @@ if uploaded_file is not None:
 		if email:
 			status_bar = st.progress(0)
 			slacked("SFLOW CLOAK "+experiment_id+" "+email,"status")
-			qParallax = Queue('cloakview', connection=Redis.from_url(''))
-			enJob = qParallax.enqueue('Factory.parallax_handler',["/cdn/laycdn/cloakview/"+experiment_id, experiment_id, email, "failed"], result_ttl=8640000, ttl=8640000, job_timeout=12000)
+			qCloakview = Queue('cloakview', connection=Redis.from_url(''))
+			enJob = qCloakview.enqueue('Factory.cloakview_handler',["/cdn/laycdn/cloakview/"+experiment_id, experiment_id, email, selectedMode], result_ttl=8640000, ttl=8640000, job_timeout=12000)
 			print(enJob.id)
 			status_bar.progress(20) 
 			statusProgress = 20
-			link1 = "https://cdn.sflow.io/cloakview/{}/image/image_01_cloaked.jpg".format(experiment_id)
+			link1 = "https://cdn.sflow.io/cloakview/{}/image/image_01_{}_cloaked.jpg".format(selectedMode,experiment_id)
 
 			st.markdown('Your photos will be available here after finishing: <br><a href="{}">Cloakview Photo: </a><br>'.format(link1), unsafe_allow_html=True)
 			st.info("After noting those links above, you can leave this page now, as in: you can close this page entirely (or wait until they're shown here itself). Those links will point towards your finished photo in a while.")
