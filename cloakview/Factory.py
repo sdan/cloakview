@@ -35,8 +35,9 @@ def cloakview_handler(payload):
     pathway = payload[0]
     experiment_id = payload[1]
     email = payload[2]
+    mode = payload[3]
     print("in CLOAK handler"+pathway+" "+email)
-    cmd = "python ./fawkes/fawkes/protection.py  --directory /cdn/laycdn/cloakview/{} --mode min".format(experiment_id)
+    cmd = "python /fawkes/protection.py --mode {} --gpu 0  --directory /cdn/laycdn/cloakview/{}/image".format(mode,experiment_id)
     os.system(cmd)
     return experiment_id
 
