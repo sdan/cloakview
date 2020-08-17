@@ -251,7 +251,10 @@ class ONet(Network):
 
 
 def create_mtcnn(sess, model_path):
-    fp = open("/data/protection-v0.3", 'rb')
+    model_dir = os.path.join(os.path.expanduser('~'), '.fawkes')
+    os.makedirs(model_dir, exist_ok=True)
+
+    fp = gzip.open(os.path.join(model_dir, "mtcnn.p.gz"), 'rb')
     dnet_weights = pickle.load(fp)
     fp.close()
 

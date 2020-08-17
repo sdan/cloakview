@@ -526,3 +526,109 @@ def select_target_label(imgs, feature_extractors_ls, feature_extractors_names, m
 
     target_images = random.sample(target_images, len(imgs))
     return np.array(target_images)
+
+
+""" TensorFlow implementation get_file
+https://github.com/tensorflow/tensorflow/blob/v2.3.0/tensorflow/python/keras/utils/data_utils.py#L168-L297
+"""
+
+
+def get_file(fname,
+             origin,
+             untar=False,
+             md5_hash=None,
+             file_hash=None,
+             cache_subdir='datasets',
+             hash_algorithm='auto',
+             extract=False,
+             archive_format='auto',
+             cache_dir=None):
+    if cache_dir is None:
+        cache_dir = os.path.join(os.path.expanduser('~'), '.fawkes')
+    if md5_hash is not None and file_hash is None:
+        file_hash = md5_hash
+        hash_algorithm = 'md5'
+    datadir_base = os.path.expanduser(cache_dir)
+    if not os.access(datadir_base, os.W_OK):
+        datadir_base = os.path.join('/tmp', '.fawkes')
+    datadir = os.path.join(datadir_base, cache_subdir)
+    _makedirs_exist_ok(datadir)
+
+    if untar:
+        untar_fpath = os.path.join(datadir, fname)
+        fpath = untar_fpath + '.tar.gz'
+    else:
+        fpath = os.path.join(datadir, fname)
+
+    download = False
+    if not os.path.exists(fpath):
+        download = True
+
+    if download:
+        error_msg = 'URL fetch failure on {}: {} -- {}'
+        dl_progress = None
+        try:
+            try:
+                urlretrieve(origin, fpath, dl_progress)
+            except HTTPError as e:
+                raise Exception(error_msg.format(origin, e.code, e.msg))
+            except URLError as e:
+                raise Exception(error_msg.format(origin, e.errno, e.reason))
+        except (Exception, KeyboardInterrupt) as e:
+            if os.path.exists(fpath):
+                os.remove(fpath)
+            raise
+        # ProgressTracker.progbar = None
+
+    if untar:
+        if not os.path.exists(untar_fpath):
+            _extract_archive(fpath, datadir, archive_format='tar')
+        return untar_fpath
+
+    if extract:
+        _extract_archive(fpath, datadir, archive_format)
+
+    return fpath
+
+
+def _extract_archive(file_path, path='.', archive_format='auto'):
+    if archive_format is None:
+        return False
+    if archive_format == 'auto':
+        archive_format = ['tar', 'zip']
+    if isinstance(archive_format, six.string_types):
+        archive_format = [archive_format]
+
+    for archive_type in archive_format:
+        if archive_type == 'tar':
+            open_fn = tarfile.open
+            is_match_fn = tarfile.is_tarfile
+        if archive_type == 'zip':
+            open_fn = zipfile.ZipFile
+            is_match_fn = zipfile.is_zipfile
+
+        if is_match_fn(file_path):
+            with open_fn(file_path) as archive:
+                try:
+                    archive.extractall(path)
+                except (tarfile.TarError, RuntimeError, KeyboardInterrupt):
+                    if os.path.exists(path):
+                        if os.path.isfile(path):
+                            os.remove(path)
+                        else:
+                            shutil.rmtree(path)
+                    raise
+            return True
+    return False
+
+
+def _makedirs_exist_ok(datadir):
+    if six.PY2:
+        # Python 2 doesn't have the exist_ok arg, so we try-except here.
+        try:
+            os.makedirs(datadir)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+    else:
+        os.makedirs(datadir, exist_ok=True)  # pylint: disable=unexpected-keyword-arg
