@@ -8,3 +8,4 @@ RUN pip install --upgrade pip
 RUN apt install sed
 COPY . .
 RUN pip install -r ./fawkes/requirements.txt
+CMD python start.py
